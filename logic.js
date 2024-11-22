@@ -1,8 +1,6 @@
 let newYorkCoords = [40.73, -74.0059];
 let mapZoomLevel = 12;
 
-
-
 // Create the base layers.
 let street = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

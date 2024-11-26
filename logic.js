@@ -77,13 +77,29 @@ let myMap = L.map("map", {
 // Create a layer control that contains our baseMaps and overlayMaps, and add them to the map.
 L.control.layers(baseMaps,overlayMaps,{collapsed: false}).addTo(myMap);
 
+function getSelectedValues(id_name) {
+    let select = document.getElementById(id_name);
+    let selectedValues = [];
+    for (let option of select.options) {
+        if (option.selected) {
+            selectedValues.push(option.value);
+        }
+    }
+    return selectedValues;
+}
+
+function check(selected, toCheck){
+    return toCheck.includes(String(selected));
+}
+
 // Function to update markers
-function updateMarkers() {
+function updateMarkersNew() {
     // make sure we update points based on choices
-    let u_category = document.getElementById('category').value;
-    let u_rating = document.getElementById('rating').value;
-    let u_price = document.getElementById('price').value;
-    let u_type = document.getElementById('type').value;
+    let selected_category = getSelectedValues('category');
+    let selected_rating = getSelectedValues('rating');
+    let selected_price = getSelectedValues('price');
+    let selected_type = getSelectedValues('type');
+    console.log(selected_category,selected_rating,selected_price,selected_type);
 
     // Clear the current markers
     restaurantsLayerGroup.clearLayers();
@@ -98,37 +114,33 @@ function updateMarkers() {
         let match_price = false;
         let match_type = false;
 
-        let cur_cat = restaurantLayers[i]._layers[(i*2)+1].feature.properties.categories;
-        let cur_rating = restaurantLayers[i]._layers[(i*2)+1].feature.properties.rating;
-        let cur_price = restaurantLayers[i]._layers[(i*2)+1].feature.properties.price;
-        let cur_type = restaurantLayers[i]._layers[(i*2)+1].feature.properties.transactions;
+        let current_category = restaurantLayers[i]._layers[(i*2)+1].feature.properties.categories;
+        let current_rating = restaurantLayers[i]._layers[(i*2)+1].feature.properties.rating;
+        let current_price = restaurantLayers[i]._layers[(i*2)+1].feature.properties.price;
+        let current_type = restaurantLayers[i]._layers[(i*2)+1].feature.properties.transactions;
 
         // If drop downs are set to any then they match everything
-        if (u_category == 'any-cat') {
+        if (String(selected_category[0]) == 'any' || selected_category[0] == null) {
             match_cat = true;
+        } else {
+            match_cat = selected_category.some(selected => check(selected, current_category));
         }
-        if (u_rating == 'any-star') {
+        if (String(selected_rating[0]) == 'any' || selected_rating[0] == null) {
             match_rating = true;
+        } else {
+            if (current_rating != "N/A" && current_rating >= selected_rating && current_rating < selected_rating+1){
+                match_rating = true;
+            }
         }
-        if (u_price == 'any-price') {
+        if (String(selected_price[0]) == 'any' || selected_price[0] == null) {
             match_price = true;
+        } else {
+            match_price = selected_price.some(selected => check(selected, current_price));
         }
-        if (u_type == 'any-type') {
+        if (String(selected_type[0]) == 'any' || selected_type[0] == null) {
             match_type = true;
-        }
-
-        // Check if current point being looked at matches search conditions
-        if (cur_cat.includes(u_category)){
-            match_cat = true;
-        }
-        if (cur_rating >= u_rating){
-            match_rating = true;
-        }
-        if (cur_price == u_price){
-            match_price = true;
-        }
-        if (cur_type.includes(u_type)){
-            match_type = true;
+        } else {
+            match_type = selected_type.some(selected => check(selected, current_type));
         }
 
         // If all condions are met add it to the list of markers
@@ -138,7 +150,6 @@ function updateMarkers() {
         }
         if (res_found == 100 || i == restaurantLayers.length-1){
             last_end_point.push(i+1);
-            console.log(`Restaurants Found: ${res_found}`, last_end_point)
             break;
         }
     }
@@ -146,32 +157,34 @@ function updateMarkers() {
     restaurantsLayerGroup.addTo(myMap);
 }
 
-// Add an event listener to the category dropdown menu to detect changes
-document.getElementById('category').addEventListener('change', function() {
-    last_end_point = [0];
-    updateMarkers();
-});
-// Add an event listener to the rating dropdown menu to detect changes
-document.getElementById('rating').addEventListener('change', function() {
-    last_end_point = [0];
-    updateMarkers();
-});
-// Add an event listener to the price dropdown menu to detect changes
-document.getElementById('price').addEventListener('change', function() {
-    last_end_point = [0];
-    updateMarkers();
-});
-// Add an event listener to the type dropdown menu to detect changes
-document.getElementById('type').addEventListener('change', function() {
-    last_end_point = [0];
-    updateMarkers();
+// Using select2's select event
+['category', 'rating', 'price', 'type'].forEach(id => {
+    $('#' + id).on('select2:select', function(e) {
+        let selectedOption = e.params.data;
+        
+        // Logic to deselect "Any" if another option is selected
+        let selectedValues = $(this).val();
+        if (String(selectedOption.id) == 'any') {
+            // Deselect all other options if "Any" is selected
+            $(this).val(['any']).trigger('change');
+        } else {
+            // Remove "Any" if another option is selected
+            let index = selectedValues.indexOf('any');
+            if (index !== -1) {
+                selectedValues.splice(index, 1);
+                $(this).val(selectedValues).trigger('change');
+            }
+        }
+
+        last_end_point = [0];
+        updateMarkersNew();
+    });
 });
 
 // Event listeners for the next batch navigation buttons
 document.getElementById('nextBatch').addEventListener('click', function() {
     if (last_end_point[last_end_point.length-1] < restaurantLayers.length){
-        console.log('100 more',last_end_point)
-        updateMarkers();
+        updateMarkersNew();
     }
 });
 // Event listeners for the previous batch navigation buttons
@@ -179,10 +192,9 @@ document.getElementById('prevBatch').addEventListener('click', function() {
     if (last_end_point.length > 2){
         last_end_point.pop();
         last_end_point.pop();
-        console.log(`100 less`,last_end_point)
-        updateMarkers();
+        updateMarkersNew();
     }
 });
 
 // Initially load the first batch of markers
-updateMarkers();
+updateMarkersNew();

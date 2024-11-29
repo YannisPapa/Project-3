@@ -1,0 +1,32 @@
+restaurants
+-
+restaurant_id INT PK
+name varchar(255)
+phone_number varchar(20)
+
+location
+-
+restaurant_id INT PK FK >- restaurants.restaurant_id
+latitude double
+longitude double
+
+cost
+-
+restaurant_id INT PK FK >- restaurants.restaurant_id
+price varchar(10)
+
+categories
+-
+restaurant_id INT PK FK >- restaurants.restaurant_id
+categorie_types varchar(255)
+
+transactions
+-
+restaurant_id INT PK FK >- restaurants.restaurant_id
+transaction_types varchar(255)
+
+ratings
+-
+restaurant_id INT PK FK >- restaurants.restaurant_id
+rating DECIMAL
+review_count INT

@@ -1,0 +1,181 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Data</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <style>
+        #chartsContainer {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+        #pieChart, #barChart {
+            max-width: 800px; 
+            max-height: 775px;
+            margin: auto;
+            display: block;
+        }
+        #navigateButton {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+        #navigateButton:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Restaurant Data Visualizations</h1>
+
+    <select id="filterSelect">
+        <option value="category">Category</option>
+        <option value="categoryTop10">Top 10 Category</option>
+        <option value="categoryBottom10">Bottom 10 Category</option>
+        <option value="rating">Rating</option>
+        <option value="price">Price</option>
+    </select>
+
+    <br><br>
+
+    <div id="chartsContainer">
+        <canvas id="pieChart" width="800" height="775"></canvas>
+        <canvas id="barChart" width="800" height="775"></canvas>
+    </div>
+
+    <button id="navigateButton">Map</button>
+
+    <script>
+        document.getElementById('filterSelect').addEventListener('change', function() {
+            let filterType = this.value;
+            let url = `/${filterType}_data`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Fetched Data:', data);
+                    renderPieChart(data);
+                    renderBarChart(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+        });
+
+        function renderPieChart(data) {
+            const ctx = document.getElementById('pieChart').getContext('2d');
+
+            if (window.pieChart && window.pieChart instanceof Chart) {
+                window.pieChart.destroy();
+            }
+
+            const total = Object.values(data).reduce((a, b) => a + b, 0);
+            console.log('Total:', total);
+
+            window.pieChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(data),
+                    datasets: [{
+                        label: '% of Restaurants',
+                        data: Object.values(data).map(value => (value / total) * 100),
+                        backgroundColor: [
+                            "#FF5733", "#4169E1", "#FF8D1A", "#00BFFF", "#FFB81C", 
+                            "#32CD32", "#FFDA44", "#1E90FF", "#FFD700", "#00CED1", 
+                            "#E0D100", "#7B68EE", "#9ACD32", "#8A2BE2", "#32CD32", 
+                            "#2E8B57", "#9932CC", "#9B30FF", "#3CB371", "#9400D3", 
+                            "#006400", "#FF1493", "#4B0082", "#F08080", "#8B0000", 
+                            "#C71585", "#B22222", "#40E0D0", "#DA70D6", "#BA55D3", 
+                            "#8B008B", "#FF6347", "#228B22", "#CD5C5C", "#9932CC", 
+                            "#20B2AA", "#FF69B4", "#D2691E", "#C71585", "#8A2BE2", 
+                            "#48D1CC", "#B22222", "#F08080", "#A52A2A", "#8B008B"
+                        ],
+                    }]
+                },
+                options: {
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return '% of Restaurants: ' + tooltipItem.raw.toFixed(2) + '%';
+                                }
+                            }
+                        },
+                        datalabels: {
+                            formatter: (value) => value.toFixed(2) + '%',
+                            color: 'white',
+                        }
+                    },
+                    responsive: true,
+                    maintainAspectRatio: false,
+                }
+            });
+        }
+
+        function renderBarChart(data) {
+            const ctx = document.getElementById('barChart').getContext('2d');
+
+            if (window.barChart && window.barChart instanceof Chart) {
+                window.barChart.destroy();
+            }
+
+            const labels = Object.keys(data);
+            const values = Object.values(data);
+
+            window.barChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '# of Restaurants',
+                        data: values,
+                        backgroundColor: [
+                            "#FF5733", "#4169E1", "#FF8D1A", "#00BFFF", "#FFB81C", 
+                            "#32CD32", "#FFDA44", "#1E90FF", "#FFD700", "#00CED1", 
+                            "#E0D100", "#7B68EE", "#9ACD32", "#8A2BE2", "#32CD32", 
+                            "#2E8B57", "#9932CC", "#9B30FF", "#3CB371", "#9400D3", 
+                            "#006400", "#FF1493", "#4B0082", "#F08080", "#8B0000", 
+                            "#C71585", "#B22222", "#40E0D0", "#DA70D6", "#BA55D3", 
+                            "#8B008B", "#FF6347", "#228B22", "#CD5C5C", "#9932CC", 
+                            "#20B2AA", "#FF69B4", "#D2691E", "#C71585", "#8A2BE2", 
+                            "#48D1CC", "#B22222", "#F08080", "#A52A2A", "#8B008B"
+                        ],
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Count'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: ''
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('filterSelect').dispatchEvent(new Event('change'));
+        });
+        document.getElementById('navigateButton').addEventListener('click', function() {
+            window.location.href = '/';
+        });
+    </script>
+</body>
+</html>

@@ -32,11 +32,13 @@ def category_bottom10_data():
 
 @app.route('/rating_data', methods=['GET'])
 def rating_data():
-    rating_bins = [0, 1, 2, 3, 4, 5]
-    rating_labels = ['0-1 ★', '1.1-2 ★', '2.1-3 ★', '3.1-4 ★', '4.1-5 ★']
+    rating_bins = [0, 1, 2, 3, 4, 5, 6]
+    rating_labels = ['0-0.99 ★','1-1.99 ★', '2-2.99 ★', '3-3.99 ★', '4-4.99 ★','5 ★']
     
     df['Rating_Category'] = pd.cut(df['Rating'], bins=rating_bins, labels=rating_labels, right=False)
     rating_counts = df['Rating_Category'].value_counts()
+
+    print(rating_counts)
     
     return jsonify(rating_counts.to_dict())
 

@@ -2,8 +2,10 @@ let newYorkCoords = [40.73260746020104, -73.87199799779387];
 let mapZoomLevel = 11;
 import { restaurant_data } from './restaurant_data.js';
 
+// used to hold stoping points when cycling through map display
 let last_end_point = [0];
 
+// function to make geojson points
 function createGeoJSONFromRestaurant(restaurant) {
     return {
         type: "Feature",
@@ -26,6 +28,7 @@ function createGeoJSONFromRestaurant(restaurant) {
     };
 }
 
+// function used to create the bindpopup for each point
 function onEachFeature(feature, layer) {
     layer.bindPopup(`<h3>${feature.properties.name}</h3><hr>
                     <p><b>Phone Number:</b> ${feature.properties.phone_number}</p>
@@ -43,11 +46,13 @@ for (let i = 0; i < restaurant_data.length; i++) {
     let restaurantMarker = L.geoJSON(restaurantGeoJSON, {
         onEachFeature: onEachFeature
     });
+    // add markers to the marker layer
     restaurantLayers.push(restaurantMarker);
 }
 
 console.log(`Total restaurants processed: ${restaurantLayers.length}`);
 
+// currentmarkers used to handle the smaller group of 100 markers to be displayed
 let currentMarkers = [];
 let restaurantsLayerGroup = L.layerGroup(currentMarkers);
 
@@ -77,6 +82,7 @@ let myMap = L.map("map", {
 // Create a layer control that contains our baseMaps and overlayMaps, and add them to the map.
 L.control.layers(baseMaps,overlayMaps,{collapsed: false}).addTo(myMap);
 
+// function used to make sure we get correct data from drop dwon menus
 function getSelectedValues(id_name) {
     let select = document.getElementById(id_name);
     let selectedValues = [];
@@ -88,6 +94,7 @@ function getSelectedValues(id_name) {
     return selectedValues;
 }
 
+// function used to check if a selected option matches with a restaurant
 function check(selected, toCheck){
     return toCheck.includes(String(selected));
 }
@@ -109,17 +116,20 @@ function updateMarkersNew() {
 
     // Add the markers for the current batch
     for (let i = last_end_point[last_end_point.length-1]; i < restaurantLayers.length; i++) {
+        // start with all matches set to false
         let match_cat = false;
         let match_rating = false;
         let match_price = false;
         let match_type = false;
 
+        // get data for the restaurant being looked at
         let current_category = restaurantLayers[i]._layers[(i*2)+1].feature.properties.categories;
         let current_rating = restaurantLayers[i]._layers[(i*2)+1].feature.properties.rating;
         let current_price = restaurantLayers[i]._layers[(i*2)+1].feature.properties.price;
         let current_type = restaurantLayers[i]._layers[(i*2)+1].feature.properties.transactions;
 
         // If drop downs are set to any then they match everything
+        // otherwise check if it matches the choices
         if (String(selected_category[0]) == 'any' || selected_category[0] == null || selected_category[0] == '???') {
             match_cat = true;
         } else {
@@ -148,11 +158,13 @@ function updateMarkersNew() {
             currentMarkers.push(restaurantLayers[i]);
             res_found++;
         }
+        // save the last point looked at so we dont look at the same restaurants
         if (res_found == 100 || i == restaurantLayers.length-1){
             last_end_point.push(i+1);
             break;
         }
     }
+    // add restaurants to they map layers and to the map
     restaurantsLayerGroup = L.layerGroup(currentMarkers);
     restaurantsLayerGroup.addTo(myMap);
 }

@@ -26,6 +26,13 @@ Our project features an interactive map with drop-down menus to filter and displ
 ## How to Run
 After downloading all the files, run the application by using Visual Studio to execute the `app.py` file. This will launch our Flask-based site.
 
+## Data Points used:
+- Types of food
+- Rating (popularity)
+- Price point
+- Location/Map
+- Transaction (Delivery, pickup, reservations)
+
 ## Technologies and Tools Used
 - **Visual Studio**: Integrated development environment (IDE) used for coding and debugging.
 - **PG-Admin**: Database management tool for PostgreSQL.
@@ -37,13 +44,6 @@ After downloading all the files, run the application by using Visual Studio to e
 - **Leaflet**: JavaScript library for interactive maps.
 - **jQuery**: JavaScript library for simplifying HTML DOM manipulation.
 - **Select2**: Enhances dropdowns with features like search, tags, and customizable styles.
-
-## Data Points
-- Types of food
-- Rating (popularity)
-- Price point
-- Location/Map
-- Transaction (Delivery, pickup, reservations)
 
 ## Data Sources
 - [Yelp Fusion API](https://docs.developer.yelp.com/docs/fusion-intro)

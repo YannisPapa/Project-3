@@ -28,6 +28,3 @@ https://docs.developer.yelp.com/docs/fusion-intro
 
 JS Library we used :
 https://github.com/select2/select2 (Enhances dropdowns with features like search, tags, and customizable styles)
-https://harvesthq.github.io/chosen/ (Provides user-friendly, searchable, and styled dropdowns)
-https://github.com/pawelczak/EasyAutocomplete (Adds autocomplete functionality for dropdowns linked to map layers or attributes)
-

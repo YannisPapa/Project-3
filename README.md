@@ -10,9 +10,9 @@ This is our submission for Project 3 with Berkeley Data Analytics Boot Camp.
 
 ## Repository Contents
 This repository contains all the code files and our presentation slides.
-**app.py**: This file is used to launch the website.
-**Team 10 - NYC Food Tour.pptx**: Is out power point presentation.
-**Project-3.ipynb**: Is the Jupyter Notebook used to pull data from Yelp API, clean the data, and save it to a `.csv`,`.json`, and `.js` formats.
+- **app.py**: This file is used to launch the website.
+- **Team 10 - NYC Food Tour.pptx**: Is out power point presentation.
+- **Project-3.ipynb**: Is the Jupyter Notebook used to pull data from Yelp API, clean the data, and save it to a `.csv`,`.json`, and `.js` formats.
 
 ### Subfolders
 - **/data**: Contains our data files, one is a `.csv` and one is a `.json`.

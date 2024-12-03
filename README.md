@@ -50,3 +50,7 @@ After downloading all the files, run the application by using Visual Studio to e
 
 ## New Library Used
 - [Select2](https://github.com/select2/select2): Enhances dropdowns with features like search, tags, and customizable styles.
+
+## Ethical Considerations
+
+For our project, we did not encounter significant ethical concerns, as the nature of our work did not involve sensitive data, personal information, or areas requiring specific ethical scrutiny. Nonetheless, we ensured that all aspects of the project adhered to standard ethical guidelines to maintain integrity and fairness.
